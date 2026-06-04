@@ -1,10 +1,10 @@
 pipeline {
-    // agent {
-    //     docker {
-    //         image 'maven:3.9.6-eclipse-temurin-17'
-    //     }
-    // }
-    agent any
+    agent {
+        docker {
+            image 'maven:3.9.6-eclipse-temurin-17'
+        }
+    }
+    // agent any
     stages {
         stage('Checkout') {
             steps {
@@ -32,13 +32,13 @@ pipeline {
     }
 
     post {
-        // always {
-        //     junit '**/target/surefire-reports/*.xml'
+        always {
+            junit '**/target/surefire-reports/*.xml'
 
-        //     archiveArtifacts '**/target/surefire-reports/*'
+            archiveArtifacts '**/target/surefire-reports/*'
 
-        //     echo "Finished build for branch: ${env.BRANCH_NAME}"
-        // }
+            echo "Finished build for branch: ${env.BRANCH_NAME}"
+        }
 
         success {
             echo "SUCCESS: ${env.BRANCH_NAME}"
