@@ -1,0 +1,52 @@
+pipeline {
+    agent {
+        docker {
+            image 'maven:3.9.6-eclipse-temurin-17'
+        }
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Branch Info') {
+            steps {
+                echo "Building branch: ${env.BRANCH_NAME}"
+                echo "Build Number: ${env.BUILD_NUMBER}"
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+    }
+
+    post {
+        always {
+            junit '**/target/surefire-reports/*.xml'
+
+            archiveArtifacts '**/target/surefire-reports/*'
+
+            echo "Finished build for branch: ${env.BRANCH_NAME}"
+        }
+
+        success {
+            echo "SUCCESS: ${env.BRANCH_NAME}"
+        }
+
+        failure {
+            echo "FAILED: ${env.BRANCH_NAME}"
+        }
+    }
+}
